@@ -24,7 +24,7 @@ public class UserDao {
     private final UserRowMapper userRowMapper;
 
     public List<User> getAllUsers() {
-        String sql = "SELECT * FROM users";
+        String sql = "SELECT * FROM users WHERE activity=1";
         return jdbcTemplate.query(sql, userRowMapper);
     }
 
@@ -34,20 +34,20 @@ public class UserDao {
         return jdbcTemplate.queryForObject(sql, userRowMapper, params);
     }
 
-    public User getUserByUsername(String username) {
-        String sql = "SELECT * FROM users WHERE username=?";
+    public List<User> getUserByUsername(String username) {
+        String sql = "SELECT * FROM users WHERE username=? AND activity=1";
         Object[] params = { username };
-        return jdbcTemplate.queryForObject(sql, userRowMapper, params);
+        return jdbcTemplate.query(sql, userRowMapper, params);
     }
 
     public boolean exists(String username) {
-        String sql = "SELECT * FROM users WHERE username=?";
+        String sql = "SELECT * FROM users WHERE username=? AND activity=1";
         Object[] params = { username };
         return jdbcTemplate.query(sql, userRowMapper, params).size() != 0;
     }
 
     public Long save(User user) {
-        String sql = "INSERT INTO users (username, password, bio, role, created_at) VALUES (?, ?, ?, ?, NOW())";
+        String sql = "INSERT INTO users (first_name, last_name, username, password, bio, role, activity, created_at) VALUES (?, ?, ?, ?, ?, ?, 1, NOW())";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(new PreparedStatementCreator() {
 
@@ -57,6 +57,8 @@ public class UserDao {
                 PreparedStatement preparedStatement = con.prepareStatement(sql,
                         new int[] { 1 });
                 int i = 1;
+                preparedStatement.setString(i++, user.getFirstName());
+                preparedStatement.setString(i++, user.getLastName());
                 preparedStatement.setString(i++, user.getUsername());
                 preparedStatement.setString(i++, user.getPassword());
                 preparedStatement.setString(i++, user.getBiography());
@@ -65,5 +67,20 @@ public class UserDao {
             }
         }, keyHolder);
         return keyHolder.getKey().longValue();
+    }
+
+    public void delete(Long id) {
+        String sql = "UPDATE users SET activity=0 WHERE id=?";
+        jdbcTemplate.update(new PreparedStatementCreator() {
+            @Override
+            public PreparedStatement createPreparedStatement(Connection con)
+                    throws SQLException {
+                PreparedStatement preparedStatement = con.prepareStatement(sql,
+                        new int[] { 1 });
+                int i = 1;
+                preparedStatement.setLong(i++, id);
+                return preparedStatement;
+            }
+        });
     }
 }

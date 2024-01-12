@@ -7,12 +7,12 @@ import lombok.RequiredArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
 @RequiredArgsConstructor
-public class UserDetailsDto {
+@AllArgsConstructor
+public class CommentDto {
 
     private Long id;
+    private String content;
     private String username;
-    private String biography;
-    private String createdAt;
+    private String timestamp;
 }

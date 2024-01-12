@@ -18,9 +18,12 @@ public class UserRowMapper implements RowMapper<User> {
     public User mapRow(ResultSet rs, int rowNum) throws SQLException {
         try {
             return User.builder().id(rs.getLong("id"))
+                    .firstName(rs.getString("first_name"))
+                    .lastName(rs.getString("last_name"))
                     .password(rs.getString("password"))
                     .username(rs.getString("username"))
                     .biography(rs.getString("bio"))
+                    .active(rs.getBoolean("activity"))
                     .createdAt(rs.getTimestamp("created_at"))
                     .role(Role.getByCode(rs.getInt("role"))).build();
         } catch (InstanceNotFoundException | SQLException e) {

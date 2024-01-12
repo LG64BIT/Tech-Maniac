@@ -20,8 +20,7 @@ public class Review {
     private String title;
     @NotBlank
     private String description;
-    private Long likeCount; 
-    @NotNull
+    private Long likeCount;
     private Long authorId;
     private Timestamp createdAt;
 }

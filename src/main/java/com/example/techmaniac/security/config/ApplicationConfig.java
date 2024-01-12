@@ -24,7 +24,7 @@ public class ApplicationConfig {
 
     @Bean
     UserDetailsService userDetailsService() {
-        return username -> userDao.getUserByUsername(username);
+        return username -> userDao.getUserByUsername(username).get(0);
     }
 
     @Bean

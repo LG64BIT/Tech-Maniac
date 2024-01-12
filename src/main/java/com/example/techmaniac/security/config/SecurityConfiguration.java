@@ -30,6 +30,8 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/reviews")
+                        .hasAuthority(Role.ADMIN.getName())
+                        .requestMatchers("/api/users")
                         .hasAuthority(Role.ADMIN.getName()).anyRequest()
                         .authenticated())
                 .sessionManagement(sess -> sess

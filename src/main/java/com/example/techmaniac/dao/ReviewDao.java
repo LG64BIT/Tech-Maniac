@@ -55,10 +55,43 @@ public class ReviewDao {
                 int i = 1;
                 preparedStatement.setString(i++, review.getTitle());
                 preparedStatement.setString(i++, review.getDescription());
+                preparedStatement.setLong(i++, review.getLikeCount());
                 preparedStatement.setLong(i++, review.getAuthorId());
                 return preparedStatement;
             }
         }, keyHolder);
         return keyHolder.getKey().longValue();
+    }
+
+    public void addLike(Long reviewId) {
+        String sql = "UPDATE reviews SET likes=likes+1 WHERE id=?";
+        jdbcTemplate.update(new PreparedStatementCreator() {
+
+            @Override
+            public PreparedStatement createPreparedStatement(Connection con)
+                    throws SQLException {
+                PreparedStatement preparedStatement = con.prepareStatement(sql,
+                        new int[] { 1 });
+                int i = 1;
+                preparedStatement.setLong(i++, reviewId);
+                return preparedStatement;
+            }
+        });
+    }
+
+    public void removeLike(Long reviewId) {
+        String sql = "UPDATE reviews SET likes=likes-1 WHERE id=?";
+        jdbcTemplate.update(new PreparedStatementCreator() {
+
+            @Override
+            public PreparedStatement createPreparedStatement(Connection con)
+                    throws SQLException {
+                PreparedStatement preparedStatement = con.prepareStatement(sql,
+                        new int[] { 1 });
+                int i = 1;
+                preparedStatement.setLong(i++, reviewId);
+                return preparedStatement;
+            }
+        });
     }
 }

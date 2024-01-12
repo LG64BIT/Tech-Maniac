@@ -1,20 +1,83 @@
-import { Button } from "antd";
+import { Button, Form, Input, message } from "antd";
 import { axiosInstance } from "../utils/axiosInstance";
+import { useNavigate } from "react-router-dom";
 
 export const RegisterForm = () => {
-  const handleRegister = () => {
-    const data = { username: "lg64bit", password: "12345678" };
+  const navigate = useNavigate();
+
+  const handleRegister = (formData) => {
     axiosInstance
-      .post("/auth/register", data)
+      .post("/auth/register", formData)
       .then((response) => {
-        console.log(response.data.token);
-        document.cookie = `Bearer ${response.data.token}`;
+        document.cookie = `token=${response.data.token};`;
+        navigate("/");
+        window.location.reload();
       })
       .catch((error) => {
+        message.open({
+          type: "error",
+          content: "Pogreška prilikom registracije!",
+        });
         console.error("Error: ", error);
       });
   };
 
-  //TODO: Create register form, validation, pass credentials to request, optional: separate to page or modal
-  return <Button onClick={handleRegister}>Register</Button>;
+  return (
+    <Form onFinish={handleRegister} layout="vertical">
+      <Form.Item
+        label="Ime"
+        name="firstName"
+        rules={[
+          {
+            required: true,
+            message: "Molimo unesite ime",
+          },
+        ]}
+      >
+        <Input />
+      </Form.Item>
+      <Form.Item
+        label="Prezime"
+        name="lastName"
+        rules={[
+          {
+            required: true,
+            message: "Molimo unesite prezime",
+          },
+        ]}
+      >
+        <Input />
+      </Form.Item>
+      <Form.Item
+        label="Korisničko ime"
+        name="username"
+        rules={[
+          {
+            required: true,
+            message: "Molimo unesite korisničko ime",
+          },
+        ]}
+      >
+        <Input />
+      </Form.Item>
+      <Form.Item
+        label="Lozinka"
+        name="password"
+        rules={[
+          {
+            required: true,
+            message: "Molimo unesite lozinku",
+          },
+        ]}
+      >
+        <Input type="password" />
+      </Form.Item>
+      <Form.Item label="Nešto o meni" name="biography">
+        <Input.TextArea maxLength={500} rows={3} />
+      </Form.Item>
+      <Button type="primary" htmlType="submit" style={{ float: "right" }}>
+        Registriraj se
+      </Button>
+    </Form>
+  );
 };

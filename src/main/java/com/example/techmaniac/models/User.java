@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.example.techmaniac.enums.Role;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,9 +26,16 @@ public class User implements UserDetails {
     private static final long serialVersionUID = -3041990733511220617L;
 
     private Long id;
+    @NotBlank
+    private String firstName;
+    @NotBlank
+    private String lastName;
+    @NotBlank
     private String username;
+    @NotBlank
     private String password;
     private String biography;
+    private boolean active;
     private Timestamp createdAt;
     private Role role;
 

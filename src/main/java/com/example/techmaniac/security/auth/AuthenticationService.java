@@ -1,6 +1,7 @@
 package com.example.techmaniac.security.auth;
 
 import javax.management.InstanceAlreadyExistsException;
+import javax.security.auth.login.AccountExpiredException;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,11 +27,13 @@ public class AuthenticationService {
 
     @Transactional(rollbackFor = Throwable.class)
     public AuthenticationResponse register(RegisterRequest request)
-            throws IllegalArgumentException, IllegalAccessException, InstanceAlreadyExistsException {
-        if(userDao.exists(request.getUsername())) {
+            throws IllegalArgumentException, IllegalAccessException,
+            InstanceAlreadyExistsException {
+        if (userDao.exists(request.getUsername())) {
             throw new InstanceAlreadyExistsException("Username already exists");
         }
-        User user = User.builder().username(request.getUsername())
+        User user = User.builder().firstName(request.getFirstName())
+                .lastName(request.getLastName()).username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .biography(request.getBiography()).role(Role.USER).build();
         userDao.save(user);
@@ -39,12 +42,18 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request)
-            throws IllegalArgumentException, IllegalAccessException {
+            throws IllegalArgumentException, IllegalAccessException,
+            AccountExpiredException {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(),
                         request.getPassword()));
         var user = userDao.getUserByUsername(request.getUsername());
-        var jwtToken = jwtService.generateToken(user.getFieldsMap(), user);
+        if (user.size() == 0) {
+            throw new AccountExpiredException(
+                    "This account is deleted by admin");
+        }
+        var jwtToken = jwtService.generateToken(user.get(0).getFieldsMap(),
+                user.get(0));
         return AuthenticationResponse.builder().token(jwtToken).build();
     }
 }

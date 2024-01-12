@@ -1,6 +1,6 @@
 package com.example.techmaniac.dto;
 
-import java.sql.Timestamp;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +17,7 @@ public class ReviewDetailsDto {
     private String title;
     private String description;
     private Long likeCount;
+    private List<CommentDto> comments;
     private Long authorId;
-    private Timestamp createdAt;
+    private String createdAt;
 }
